@@ -8,7 +8,7 @@ const Chat = () => {
     setOpenEmoji(false);
   }
   return (
-    <div className=" flex-[2] border-x border-solid border-x-[#dddddd35] h-full">
+    <div className="flex flex-col flex-[2] border-x border-solid border-x-[#dddddd35] h-full">
       <div className="top flex items-center justify-between p-5 border-b border-solid border-b-[#dddddd35]">
         <div className="user flex items-center gap-5">
           <img
@@ -39,8 +39,8 @@ const Chat = () => {
           />
         </div>
       </div>
-      <div className="center"></div>
-      <div className="bottom p-5 gap-5 flex items-center content-between border-solid border-t border-t-[#dddddd35] ">
+      <div className="center flex-1 p-5"></div>
+      <div className="bottom mt-auto p-5 gap-5 flex items-center content-between border-solid border-t border-t-[#dddddd35] ">
         <div className="icons flex gap-5">
           <img
             className="w-5 h-5 cursor-pointer"
@@ -65,14 +65,16 @@ const Chat = () => {
           onChange={(e) => setMessage(e.target.value)}
           className="flex-1 border-none outline-none text-[16px] text-white p-[10px] rounded-[10px] bg-[rgba(17,25,40,.5)] "
         />
-        <div className="emoji">
+        <div className="emoji relative">
           <img
             className="w-5 h-5 cursor-pointer"
             src="../../../emoji.png"
             alt=""
             onClick={() => setOpenEmoji((prev) => !prev)}
           />
-          <EmojiPicker open={openEmoji} onEmojiClick={handleEmoji} />
+          <div className="picker absolute left-0 bottom-[50px]">
+            <EmojiPicker open={openEmoji} onEmojiClick={handleEmoji} />
+          </div>
         </div>
         <button className="bg-[#5183fe] text-white border-none py-[10px] px-5 cursor-pointer rounded-md">
           Send
