@@ -39,7 +39,38 @@ const Chat = () => {
           />
         </div>
       </div>
-      <div className="center flex-1 p-5"></div>
+      <div className="center flex-1 p-5 flex flex-col gap-5 overflow-y-scroll">
+        <div className="message max-w-[70%] flex gap-5">
+          <img
+            className="w-[30px] h-[30px] object-cover rounded-full"
+            src="../../../avatar.png"
+            alt=""
+          />
+          <div className="texts flex flex-1 flex-col gap-[5px]">
+            <p className="bg-[rgba(17,25,40,.3)] p-5 rounded-[10px]">
+              Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum
+              dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit
+              ametLorem ipsum dolor sit amet
+            </p>
+            <span className="text-sm">1 min ago</span>
+          </div>
+        </div>
+        <div className="message own  self-end max-w-[70%] flex gap-5">
+          <div className="texts flex flex-1 flex-col gap-[5px]">
+            <img
+              className="w-full h-[300px] rounded-lg object-cover"
+              src="https://images.pexels.com/photos/53435/tree-oak-landscape-view-53435.jpeg"
+              alt=""
+            />
+            <p className="bg-[#5183fe] p-5 rounded-[10px]">
+              Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum
+              dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit
+              ametLorem ipsum dolor sit amet
+            </p>
+            <span className="text-sm">1 min ago</span>
+          </div>
+        </div>
+      </div>
       <div className="bottom mt-auto p-5 gap-5 flex items-center content-between border-solid border-t border-t-[#dddddd35] ">
         <div className="icons flex gap-5">
           <img
