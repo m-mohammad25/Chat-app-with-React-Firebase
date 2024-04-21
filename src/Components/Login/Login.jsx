@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import upload from "../../lib/upload";
 const Login = () => {
   const [avatar, setAvatar] = useState({
     file: null,
     url: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleAvatar = (e) => {
     if (!e.target.files[0]) return;
@@ -19,6 +25,7 @@ const Login = () => {
 
   const handleRegister = async function (e) {
     e.preventDefault();
+    setLoading(true);
     const formDate = new FormData(e.target);
     const { username, password, email } = Object.fromEntries(formDate);
 
@@ -26,9 +33,12 @@ const Login = () => {
       const res = await createUserWithEmailAndPassword(auth, email, password);
       console.log(res.user);
 
+      const imgUrl = await upload(avatar.file);
+
       await setDoc(doc(db, "users", res.user.uid), {
         username,
         email,
+        avatar: imgUrl,
         id: res.user.uid,
         blocked: [],
       });
@@ -41,11 +51,25 @@ const Login = () => {
     } catch (e) {
       console.log(e.message);
       toast.error(e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLogin = function (e) {
+  const handleLogin = async function (e) {
     e.preventDefault();
+    setLoading(true);
+    const formDate = new FormData(e.target);
+    const { password, email } = Object.fromEntries(formDate);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
     // toast.warn("hey!");
   };
   return (
@@ -68,8 +92,11 @@ const Login = () => {
             name="password"
             className="p-5 border-none outline-none bg-[rgba(17,25,40,0.6)] text-white rounded-md"
           />
-          <button className="w-full p-5 border-none bg-[#1f8ef1] text-white rounded-md font-medium">
-            Sign In
+          <button
+            disabled={loading}
+            className="disabled:cursor-not-allowed disabled:bg-[#1f8eff19c] w-full p-5 border-none bg-[#1f8ef1] text-white rounded-md font-medium"
+          >
+            {loading ? "Loading" : "Sign In"}
           </button>
         </form>
       </div>
@@ -115,8 +142,11 @@ const Login = () => {
             name="password"
             className="p-5 border-none outline-none bg-[rgba(17,25,40,0.6)] text-white rounded-md"
           />
-          <button className="w-full p-5 border-none bg-[#1f8ef1] text-white rounded-md font-medium">
-            Sign Up
+          <button
+            disabled={loading}
+            className="disabled:cursor-not-allowed disabled:bg-[#1f8eff19c] w-full p-5 border-none bg-[#1f8ef1] text-white rounded-md font-medium"
+          >
+            {loading ? "Loading" : "Sign Up"}
           </button>
         </form>
       </div>
