@@ -1,8 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddUser from "./AddUser/AddUser";
-
+import { useUserStore } from "../../../lib/userStore/";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { db } from "../../../lib/firebase/";
 const ChatList = () => {
+  const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
+  const { currentUser } = useUserStore();
+
+  useEffect(() => {
+    const unSub = onSnapshot(
+      doc(db, "userchats", currentUser.id),
+      async (res) => {
+        const item = res.data().chats;
+        const promises = item.map(async (chat) => {
+          const userDocRef = doc(db, "users", item.reciverId);
+          const userDocSnap = await getDoc(userDocRef);
+          const user = userDocSnap.data();
+
+          return { ...item, user };
+        });
+
+        const chatData = await Promise.all(promises);
+        setChats(
+          chatData.sort((a, b) => {
+            b.updateAt - a.updateAt;
+          })
+        );
+      }
+    );
+    return () => {
+      unSub();
+    };
+  }, [currentUser.id]);
+
   return (
     <div className="flex-1 overflow-y-scroll chatList">
       <div className="flex items-center flex-1 gap-5 p-5">
@@ -27,61 +58,24 @@ const ChatList = () => {
           alt=""
         />
       </div>
-      <div className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="../../../../public/avatar.png"
-          alt=""
-        />
-        <div className="flex flex-col g-[10px]">
-          <span className="font-medium">John Doe</span>
-          <p className="text-sm font-light">hello</p>
-        </div>
-      </div>
-      <div className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="../../../../public/avatar.png"
-          alt=""
-        />
-        <div className="flex flex-col g-[10px]">
-          <span className="font-medium">John Doe</span>
-          <p className="text-sm font-light">hello</p>
-        </div>
-      </div>
-      <div className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="../../../../public/avatar.png"
-          alt=""
-        />
-        <div className="flex flex-col g-[10px]">
-          <span className="font-medium">John Doe</span>
-          <p className="text-sm font-light">hello</p>
-        </div>
-      </div>
-      <div className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="../../../../public/avatar.png"
-          alt=""
-        />
-        <div className="flex flex-col g-[10px]">
-          <span className="font-medium">John Doe</span>
-          <p className="text-sm font-light">hello</p>
-        </div>
-      </div>
-      <div className="item flex items-center gap-5 p-5 cursor-pointer item  border-b-[#dddddd35]">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="../../../../public/avatar.png"
-          alt=""
-        />
-        <div className="flex flex-col g-[10px]">
-          <span className="font-medium">John Doe</span>
-          <p className="text-sm font-light">hello</p>
-        </div>
-      </div>
+
+      {chats.map((chat) => {
+        <div
+          key={chat.chatId}
+          className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]"
+        >
+          <img
+            className="w-[50px] h-[50px] object-cover rounded-full"
+            src="../../../../public/avatar.png"
+            alt=""
+          />
+          <div className="flex flex-col g-[10px]">
+            <span className="font-medium">{chat.user.username}</span>
+            <p className="text-sm font-light">{chat.lastMessage}</p>
+          </div>
+        </div>;
+      })}
+
       {addMode && <AddUser />}
     </div>
   );
