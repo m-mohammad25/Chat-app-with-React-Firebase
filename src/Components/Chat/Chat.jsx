@@ -1,6 +1,10 @@
 import EmojiPicker from "emoji-picker-react";
+import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
+import { db } from "../../lib/firebase";
+
 const Chat = () => {
+  const [chat, setChat] = useState();
   const [openEmoji, setOpenEmoji] = useState(false);
   const [message, setMessage] = useState("");
   const endRef = useRef(null);
@@ -9,6 +13,20 @@ const Chat = () => {
       behavior: "smooth",
     });
   }, []);
+
+  useEffect(() => {
+    const unSub = onSnapshot(
+      doc(db, "chats", "VmHWIA8Ewpd0BU9YAdUm"),
+      (res) => {
+        setChat(res.data());
+      }
+    );
+    return () => {
+      unSub();
+    };
+  }, []);
+
+  console.log(chat);
   function handleEmoji(e) {
     setMessage((prev) => prev + e.emoji);
     setOpenEmoji(false);

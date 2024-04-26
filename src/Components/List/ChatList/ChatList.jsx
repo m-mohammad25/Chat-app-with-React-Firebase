@@ -10,11 +10,11 @@ const ChatList = () => {
 
   useEffect(() => {
     const unSub = onSnapshot(
-      doc(db, "userchats", currentUser.id),
+      doc(db, "userChats", currentUser.id),
       async (res) => {
         const item = res.data().chats;
-        const promises = item.map(async (chat) => {
-          const userDocRef = doc(db, "users", item.reciverId);
+        const promises = item.map(async (item) => {
+          const userDocRef = doc(db, "users", item.recieverId);
           const userDocSnap = await getDoc(userDocRef);
           const user = userDocSnap.data();
 
@@ -22,9 +22,10 @@ const ChatList = () => {
         });
 
         const chatData = await Promise.all(promises);
+
         setChats(
           chatData.sort((a, b) => {
-            b.updateAt - a.updateAt;
+            b.updatedAt - a.updatedAt;
           })
         );
       }
@@ -59,22 +60,22 @@ const ChatList = () => {
         />
       </div>
 
-      {chats.map((chat) => {
+      {chats.map((chat) => (
         <div
           key={chat.chatId}
           className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]"
         >
           <img
             className="w-[50px] h-[50px] object-cover rounded-full"
-            src="../../../../public/avatar.png"
+            src={chat.user.avatar || "../../../../public/avatar.png"}
             alt=""
           />
           <div className="flex flex-col g-[10px]">
             <span className="font-medium">{chat.user.username}</span>
             <p className="text-sm font-light">{chat.lastMessage}</p>
           </div>
-        </div>;
-      })}
+        </div>
+      ))}
 
       {addMode && <AddUser />}
     </div>

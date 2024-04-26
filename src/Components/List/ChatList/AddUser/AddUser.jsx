@@ -1,8 +1,21 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../../../../lib/firebase";
+import { useUserStore } from "../../../../lib/userStore";
 function AddUser() {
   const [user, setUser] = useState(null);
+
+  const { currentUser } = useUserStore();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -17,6 +30,40 @@ function AddUser() {
       if (!querySnapShot.empty) {
         setUser(querySnapShot.docs[0].data());
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAdd = async (e) => {
+    const chatRef = collection(db, "chats");
+    const userChatsRef = collection(db, "userChats");
+
+    try {
+      const newChatRef = doc(chatRef);
+
+      await setDoc(newChatRef, {
+        createdAt: serverTimestamp(),
+        messages: [],
+      });
+
+      await updateDoc(doc(userChatsRef, user.id), {
+        chats: arrayUnion({
+          chatId: newChatRef.id,
+          lastMessage: "",
+          recieverId: currentUser.id,
+          updatedAt: Date.now(),
+        }),
+      });
+
+      await updateDoc(doc(userChatsRef, currentUser.id), {
+        chats: arrayUnion({
+          chatId: newChatRef.id,
+          lastMessage: "",
+          recieverId: user.id,
+          updatedAt: Date.now(),
+        }),
+      });
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +91,10 @@ function AddUser() {
             />
             <span>{user.username}</span>
           </div>
-          <button className="p-[10px] rounded-[10px] border-none text-white bg-[#1a73e8] ">
+          <button
+            onClick={handleAdd}
+            className="p-[10px] rounded-[10px] border-none text-white bg-[#1a73e8] "
+          >
             Add User
           </button>
         </div>
