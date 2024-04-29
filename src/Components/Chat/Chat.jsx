@@ -1,14 +1,22 @@
 import EmojiPicker from "emoji-picker-react";
-import { doc, onSnapshot } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
+import { useUserStore } from "../../lib/userStore";
 
 const Chat = () => {
   const [chat, setChat] = useState();
   const [openEmoji, setOpenEmoji] = useState(false);
-  const [message, setMessage] = useState("");
-  const { chatId } = useChatStore();
+  const [text, setText] = useState("");
+  const { chatId, user } = useChatStore();
+  const { currentUser } = useUserStore();
 
   const endRef = useRef(null);
   useEffect(() => {
@@ -27,8 +35,44 @@ const Chat = () => {
   }, [chatId]);
 
   function handleEmoji(e) {
-    setMessage((prev) => prev + e.emoji);
+    setText((prev) => prev + e.emoji);
     setOpenEmoji(false);
+  }
+
+  async function handleSend() {
+    if (text == "") return;
+    try {
+      await updateDoc(doc(db, "chats", chatId), {
+        messages: arrayUnion({
+          senderId: currentUser.id,
+          text,
+          createdAt: new Date(),
+        }),
+      });
+
+      const userIDs = [currentUser.id, user.id];
+
+      userIDs.map(async (id) => {
+        const userChatRef = doc(db, "userChats", id);
+        const userChatSnapshot = await getDoc(userChatRef);
+        if (userChatSnapshot.exists()) {
+          const userChatData = userChatSnapshot.data();
+          const chatIndex = userChatData.chats.findIndex(
+            (c) => c.chatId === chatId
+          );
+          userChatData.chats[chatIndex].lastMessage = text;
+          userChatData.chats[chatIndex].isSeen =
+            id === currentUser.id ? true : false;
+          userChatData.chats[chatIndex].updatedAt = Date.now();
+
+          await updateDoc(userChatRef, {
+            chats: userChatData.chats,
+          });
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className="flex flex-col flex-[2] border-x border-solid border-x-[#dddddd35] h-full">
@@ -104,8 +148,8 @@ const Chat = () => {
         <input
           type="text"
           placeholder="send a message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           className="flex-1 border-none outline-none text-[16px] text-white p-[10px] rounded-[10px] bg-[rgba(17,25,40,.5)] "
         />
         <div className="emoji relative">
@@ -119,7 +163,10 @@ const Chat = () => {
             <EmojiPicker open={openEmoji} onEmojiClick={handleEmoji} />
           </div>
         </div>
-        <button className="bg-[#5183fe] text-white border-none py-[10px] px-5 cursor-pointer rounded-md">
+        <button
+          onClick={handleSend}
+          className="bg-[#5183fe] text-white border-none py-[10px] px-5 cursor-pointer rounded-md"
+        >
           Send
         </button>
       </div>

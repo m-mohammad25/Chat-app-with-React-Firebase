@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AddUser from "./AddUser/AddUser";
 import { useUserStore } from "../../../lib/userStore/";
 import { useChatStore } from "../../../lib/chatStore";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase/";
 const ChatList = () => {
   const [chats, setChats] = useState([]);
@@ -37,8 +37,22 @@ const ChatList = () => {
   }, [currentUser.id]);
 
   async function handleSelect(chat) {
-    console.log(chat);
-    changeChat(chat.chatId, chat.user);
+    const userChats = chats.map((item) => {
+      const { user, ...rest } = item;
+      return rest;
+    });
+
+    const chatIndex = userChats.findIndex((c) => c.chatId === chat.chatId);
+    userChats[chatIndex].isSeen = true;
+    const userChatRef = doc(db, "userChats", currentUser.id);
+    try {
+      await updateDoc(userChatRef, {
+        chats: userChats,
+      });
+      changeChat(chat.chatId, chat.user);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -71,6 +85,7 @@ const ChatList = () => {
           key={chat.chatId}
           className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]"
           onClick={() => handleSelect(chat)}
+          style={{ backgroundColor: chat.isSeen ? "transparent" : "#5183fe" }}
         >
           <img
             className="w-[50px] h-[50px] object-cover rounded-full"
