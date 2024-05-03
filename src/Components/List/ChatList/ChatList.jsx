@@ -6,6 +6,7 @@ import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase/";
 const ChatList = () => {
   const [chats, setChats] = useState([]);
+  const [filterTxt, setFilterTxt] = useState("");
   const [addMode, setAddMode] = useState(false);
   const { currentUser } = useUserStore();
   const { changeChat } = useChatStore();
@@ -54,6 +55,9 @@ const ChatList = () => {
       console.log(error);
     }
   }
+  const filteredChats = chats.filter((c) =>
+    c.user.username.toLowerCase().includes(filterTxt.toLocaleLowerCase())
+  );
 
   return (
     <div className="flex-1 overflow-y-scroll chatList">
@@ -64,8 +68,7 @@ const ChatList = () => {
             className="flex-1 overflow-hidden text-white bg-transparent border-none outline-none"
             type="text"
             placeholder="search"
-            name=""
-            id=""
+            onChange={(e) => setFilterTxt(e.target.value)}
           />
         </div>
         <img
@@ -80,7 +83,7 @@ const ChatList = () => {
         />
       </div>
 
-      {chats.map((chat) => (
+      {filteredChats.map((chat) => (
         <div
           key={chat.chatId}
           className="item flex items-center gap-5 p-5 cursor-pointer item border-b border-solid border-b-[#dddddd35]"
@@ -89,11 +92,19 @@ const ChatList = () => {
         >
           <img
             className="w-[50px] h-[50px] object-cover rounded-full"
-            src={chat.user.avatar || "../../../../public/avatar.png"}
+            src={
+              chat.user.blocked.includes(currentUser.id)
+                ? "../../../../public/avatar.png"
+                : chat.user.avatar || "../../../../public/avatar.png"
+            }
             alt=""
           />
           <div className="flex flex-col g-[10px]">
-            <span className="font-medium">{chat.user.username}</span>
+            <span className="font-medium">
+              {chat.user.blocked.includes(currentUser.id)
+                ? "User"
+                : chat.user.username}
+            </span>
             <p className="text-sm font-light">{chat.lastMessage}</p>
           </div>
         </div>

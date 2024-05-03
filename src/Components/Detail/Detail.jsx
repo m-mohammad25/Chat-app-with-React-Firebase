@@ -1,15 +1,35 @@
-import { auth } from "../../lib/firebase";
+import { auth, db } from "../../lib/firebase";
+import { useChatStore } from "../../lib/chatStore";
+import { useUserStore } from "../../lib/userStore";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const Detail = () => {
+  const { user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
+    useChatStore();
+  const { currentUser } = useUserStore();
+  const handleBlock = async () => {
+    if (!user) return;
+
+    const userDocRef = doc(db, "users", currentUser.id);
+
+    try {
+      await updateDoc(userDocRef, {
+        blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+      });
+      changeBlock();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex-1 detail">
       <div className="user py-[30px] px-5 flex flex-col items-center  gap-[15px] border-solid border-b border-b-[#dddddd35]">
         <img
           className="h-[100px] w-[100px] rounded-full object-cover "
-          src="../../../avatar.png"
+          src={user?.avatar || "../../../avatar.png"}
           alt=""
         />
-        <h2>John Doe</h2>
+        <h2>{user?.username}</h2>
         <p>Lorem ipsum dolor sit amet.</p>
       </div>
       <div className="flex flex-col p-5 gap-[25px] info ">
@@ -72,8 +92,15 @@ const Detail = () => {
             />
           </div>
         </div>
-        <button className=" p-4  text-white border-none rounded-md cursor-pointer bg-[rgba(230,74,105,.553)] hover:bg-[rgba(220,20,60,.794)]">
-          Block User
+        <button
+          onClick={handleBlock}
+          className=" p-4 text-white border-none rounded-md cursor-pointer bg-[rgba(230,74,105,.553)] hover:bg-[rgba(220,20,60,.794)]"
+        >
+          {isCurrentUserBlocked
+            ? "You Are Blocked"
+            : isReceiverBlocked
+            ? "User Blocked"
+            : "Block User"}
         </button>
         <button
           className="p-[10px] bg-[#1a73eb] rounded-md"
