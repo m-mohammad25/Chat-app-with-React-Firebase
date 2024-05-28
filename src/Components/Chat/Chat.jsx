@@ -50,7 +50,6 @@ const Chat = () => {
       if (img.file) {
         imgUrl = await upload(img.file);
       }
-      console.log(imgUrl);
 
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({

@@ -1,12 +1,40 @@
-import { auth, db } from "../../lib/firebase";
+import { auth, db, storage } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ref } from "firebase/storage";
 
 const Detail = () => {
-  const { user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
+  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
     useChatStore();
   const { currentUser } = useUserStore();
+  const [sharedImgs, setSharedImgs] = useState([]);
+  console.log(sharedImgs);
+
+  useEffect(() => {
+    const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
+      let messages = res.data().messages;
+
+      messages.forEach((msg) => {
+        let imgSrc = msg?.img;
+        if (typeof imgSrc === "undefined") return;
+        let imgRef = ref(storage, msg?.img);
+        let imgName = imgRef.name;
+        setSharedImgs((prev) => [{ name: imgName, src: imgSrc }, ...prev]);
+      });
+    });
+    return () => {
+      unSub();
+    };
+  }, [chatId]);
+
   const handleBlock = async () => {
     if (!user) return;
 
@@ -21,6 +49,7 @@ const Detail = () => {
       console.log(error);
     }
   };
+
   return (
     <div className="flex-1 detail">
       <div className="user py-[30px] px-5 flex flex-col items-center  gap-[15px] border-solid border-b border-b-[#dddddd35]">
@@ -62,25 +91,31 @@ const Detail = () => {
               alt=""
             />
           </div>
-          <div className="flex flex-col gap-5 mt-5 photos">
-            <div className="flex items-center justify-between photoItem">
-              <div className="flex items-center gap-5 photoDetail">
-                <img
-                  className="object-cover w-10 h-10 rounded-lg"
-                  src="https://images.pexels.com/photos/53435/tree-oak-landscape-view-53435.jpeg"
-                  alt=""
-                />
-                <span className="text-sm font-light text-gray-400">
-                  photo_2024_2.png
-                </span>
+          {sharedImgs?.map((img) => (
+            <>
+              <div className="flex flex-col gap-5 mt-5 photos" key={img.name}>
+                <div className="flex items-center justify-between photoItem">
+                  <div className="flex items-center gap-5 photoDetail">
+                    <img
+                      className="object-cover w-10 h-10 rounded-lg"
+                      src={img.src}
+                      alt=""
+                    />
+                    <span className="text-sm font-light text-gray-400">
+                      {img.name}
+                    </span>
+                  </div>
+                  <a href={img.src} download={img.name}>
+                    <img
+                      className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
+                      src="../../../download.png"
+                      alt=""
+                    />
+                  </a>
+                </div>
               </div>
-              <img
-                className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-                src="../../../download.png"
-                alt=""
-              />
-            </div>
-          </div>
+            </>
+          ))}
         </div>
         <div className="option">
           <div className="flex items-center justify-between title">
