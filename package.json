@@ -1,6 +1,6 @@
 {
   "name": "chat-starter",
-  "homepage": "https://m-mohammad25.github.io/Chat-app-with-React-Firebase.git",
+  "homepage": "https://m-mohammad25.github.io/Chat-app-with-React-Firebase",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "emoji-picker-react": "^4.9.2",
