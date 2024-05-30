@@ -55,7 +55,7 @@ const Detail = () => {
       <div className="user py-[30px] px-5 flex flex-col items-center  gap-[15px] border-solid border-b border-b-[#dddddd35]">
         <img
           className="h-[100px] w-[100px] rounded-full object-cover "
-          src={user?.avatar || "../../../avatar.png"}
+          src={user?.avatar || "avatar.png"}
           alt=""
         />
         <h2>{user?.username}</h2>
@@ -67,7 +67,7 @@ const Detail = () => {
             <span>Chat Settings</span>
             <img
               className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-              src="../../../arrowUp.png"
+              src="arrowUp.png"
               alt=""
             />
           </div>
@@ -77,7 +77,7 @@ const Detail = () => {
             <span>Chat Settings</span>
             <img
               className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-              src="../../../arrowUp.png"
+              src="arrowUp.png"
               alt=""
             />
           </div>
@@ -87,7 +87,7 @@ const Detail = () => {
             <span>Shared Photos</span>
             <img
               className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-              src="../../../arrowDown.png"
+              src="arrowDown.png"
               alt=""
             />
           </div>
@@ -108,7 +108,7 @@ const Detail = () => {
                   <a href={img.src} download={img.name}>
                     <img
                       className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-                      src="../../../download.png"
+                      src="download.png"
                       alt=""
                     />
                   </a>
@@ -122,7 +122,7 @@ const Detail = () => {
             <span>Shared Files</span>
             <img
               className="w-[30px] h-[30px] p-[10px] bg-[rgba(17,25,40,0.3)] rounded-full cursor-pointer"
-              src="../../../arrowUp.png"
+              src="arrowUp.png"
               alt=""
             />
           </div>

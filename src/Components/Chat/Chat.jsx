@@ -99,7 +99,7 @@ const Chat = () => {
         <div className="flex items-center gap-5 user">
           <img
             className="w-[60px] h-[60px] object-cover rounded-full"
-            src={user?.avatar || "../../../../public/avatar.png"}
+            src={user?.avatar || "avatar.png"}
             alt=""
           />
           <div className="texts flex flex-col gap-[5px]">
@@ -108,21 +108,9 @@ const Chat = () => {
           </div>
         </div>
         <div className="flex gap-5 icons">
-          <img
-            className="w-5 h-5 cursor-pointer"
-            src="../../../phone.png"
-            alt=""
-          />
-          <img
-            className="w-5 h-5 cursor-pointer"
-            src="../../../video.png"
-            alt=""
-          />
-          <img
-            className="w-5 h-5 cursor-pointer"
-            src="../../../edit.png"
-            alt=""
-          />
+          <img className="w-5 h-5 cursor-pointer" src="phone.png" alt="" />
+          <img className="w-5 h-5 cursor-pointer" src="video.png" alt="" />
+          <img className="w-5 h-5 cursor-pointer" src="edit.png" alt="" />
         </div>
       </div>
       <div className="flex flex-col flex-1 gap-5 p-5 overflow-y-scroll center">
@@ -175,23 +163,11 @@ const Chat = () => {
       <div className="bottom mt-auto p-5 gap-5 flex items-center content-between border-solid border-t border-t-[#dddddd35] ">
         <div className="flex gap-5 icons">
           <label htmlFor="img">
-            <img
-              className="w-5 h-5 cursor-pointer"
-              src="../../../img.png"
-              alt=""
-            />
+            <img className="w-5 h-5 cursor-pointer" src="img.png" alt="" />
           </label>
           <input id="img" type="file" className="hidden" onChange={handleImg} />
-          <img
-            className="w-5 h-5 cursor-pointer"
-            src="../../../camera.png"
-            alt=""
-          />
-          <img
-            className="w-5 h-5 cursor-pointer"
-            src="../../../mic.png"
-            alt=""
-          />
+          <img className="w-5 h-5 cursor-pointer" src="camera.png" alt="" />
+          <img className="w-5 h-5 cursor-pointer" src="mic.png" alt="" />
         </div>
         <input
           type="text"
@@ -208,7 +184,7 @@ const Chat = () => {
         <div className="relative emoji">
           <img
             className="w-5 h-5 cursor-pointer"
-            src="../../../emoji.png"
+            src="emoji.png"
             alt=""
             onClick={() => setOpenEmoji((prev) => !prev)}
           />

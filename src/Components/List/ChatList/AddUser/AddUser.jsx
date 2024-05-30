@@ -86,7 +86,7 @@ function AddUser() {
           <div className="flex items-center gap-5 detail">
             <img
               className="w-[50px] h-[50px] rounded-full object-cover"
-              src={user.avatar || "../../../../../avatar.png"}
+              src={user.avatar || "avatar.png"}
               alt="avatar"
             />
             <span>{user.username}</span>

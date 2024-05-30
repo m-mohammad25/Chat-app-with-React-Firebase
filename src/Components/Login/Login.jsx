@@ -132,7 +132,7 @@ const Login = () => {
             className="flex items-center justify-between w-full underline cursor-pointer"
           >
             <img
-              src={avatar.url || "../../../avatar.png"}
+              src={avatar.url || "avatar.png"}
               alt=""
               className="w-[50px] h-[50px] rounded-[10px] object-cover opacity-60"
             />

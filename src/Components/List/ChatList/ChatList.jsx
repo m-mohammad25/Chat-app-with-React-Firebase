@@ -63,7 +63,7 @@ const ChatList = () => {
     <div className="flex-1 overflow-y-scroll chatList">
       <div className="flex items-center flex-1 gap-5 p-5">
         <div className="flex  items-center gap-5 p-[10px] rounded-[10px] bg-[rgba(17,25,40,0.5)]">
-          <img className="w-5 h-5" src="../../../../public/search.png" alt="" />
+          <img className="w-5 h-5" src="search.png" alt="" />
           <input
             className="flex-1 overflow-hidden text-white bg-transparent border-none outline-none"
             type="text"
@@ -73,11 +73,7 @@ const ChatList = () => {
         </div>
         <img
           className="w-9 h-9 bg-[rgba(17,25,40,.5)] cursor-pointer p-[10px] rounded-[10px]"
-          src={
-            !addMode
-              ? "../../../../public/plus.png"
-              : "../../../../public/minus.png"
-          }
+          src={!addMode ? "plus.png" : "minus.png"}
           onClick={() => setAddMode((prev) => !prev)}
           alt=""
         />
@@ -94,8 +90,8 @@ const ChatList = () => {
             className="w-[50px] h-[50px] object-cover rounded-full"
             src={
               chat.user.blocked.includes(currentUser.id)
-                ? "../../../../public/avatar.png"
-                : chat.user.avatar || "../../../../public/avatar.png"
+                ? "avatar.png"
+                : chat.user.avatar || "avatar.png"
             }
             alt=""
           />
